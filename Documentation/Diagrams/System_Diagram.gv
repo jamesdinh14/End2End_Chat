@@ -1,0 +1,38 @@
+digraph system {
+	
+	// Create the start/end points
+	{node [shape=circle width=.25 fillcolor=black style=filled];
+	 thread1Start [label=""]; thread2Start [label=""]; thread3End [label=""] }
+
+	// Create the rectangle nodes (Action/Process)
+	{node [shape=box]; idle1 [label="idle"]; idle2 [label="idle"];
+	 userAction [label="user action"]; postCommand [label="post command"];
+	 check [label="check for\nnew commands"]; commandQueue [label="command queue"];
+	 dispatch [label="dispatch\ncommand\nworker thread"]; process [label="process\ncommand"];
+	 critSect [label="critical\nsection"]; }
+
+	// Create the diamond node (decision/conditional)
+	{ node [shape=diamond]; queueEmpty [label="queue\nempty"];	}
+
+	// Line up the columns and rows with the right nodes
+	{rank = same; thread1Start; thread2Start} /* 1st row */
+	{rank = same; idle1; idle2 } /* 2nd row */
+	{rank = same; userAction; check; queueEmpty } /* 3rd row */
+	{rank = same; postCommand; commandQueue; dispatch; process} /* 4th row */
+	{rank = same; critSect; thread3End }
+
+	// Thread 1 Diagram
+	thread1Start -> idle1 -> userAction -> postCommand;
+	postCommand -> idle1;
+	postCommand -> commandQueue;
+
+	// Thread 2 Diagram
+	thread2Start -> idle2 -> check -> commandQueue;
+	commandQueue -> critSect [style=dotted];
+	check -> queueEmpty;
+	queueEmpty -> idle2 [label=" yes"];
+	queueEmpty -> dispatch [label=" no"];
+	dispatch -> idle2;
+	dispatch -> process;
+	process -> thread3End;
+}
