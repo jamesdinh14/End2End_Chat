@@ -1,6 +1,6 @@
-End-to-End Secure Chat
+﻿End-to-End Secure Chat
 
-Team Insecurity: James Dinh and Kenny
+Team Insecurity: James Dinh and Hsi You Huang
 
 Application Properties
 Features: The chat is a one-on-one system, with a middleman. The two “participants” are the clients. The middleman is the server. One client sends a message to the server; the server receives that message and passes it on the other client; the other client receives the message. The clients do not have to be active at the same time in order to receive messages.
@@ -8,6 +8,9 @@ Language: Java
 RESTful server:
 
 Assets
+Client
+Server
+User information
 
 Stakeholders
 Users of the chat system
