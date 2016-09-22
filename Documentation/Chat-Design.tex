@@ -7,7 +7,7 @@ End-to-End Secure Chat\newline
 
 \textbf{Application Properties}\newline
 
-\begin{itemize}
+\begin{enumerate}
 	\item \textbf{Features}: The chat is a one-on-one system, with a middleman. The two
      “participants” are the clients. The middleman is the server. One client sends a message to the
      server; the server receives that message and passes it on the other client; the other client 
@@ -36,13 +36,13 @@ End-to-End Secure Chat\newline
         \end{itemize}
     \item \textbf{Adversarial Models}:
     	\begin {itemize}
-        	\item Eavesdropper
-		\item Outsider
-		\item Insider
+            \item Eavesdropper
+		    \item Outsider
+		    \item Insider
         \end {itemize}
     \item \textbf {Possible Vulnerabilities}:
     	\begin {itemize}
-        	\item 
+        	\item Man-in-the-middle attack
         \end {itemize}
     \item \textbf {Related Previous Work}:
     \item \textbf {Solution:} The clients will hold a “key” that will encrypt and decrypt messages
@@ -51,8 +51,11 @@ End-to-End Secure Chat\newline
     and “send” it. Before the message leaves the sender, the message is encrypted and then it gets
     sent to the server. The server will receive the encrypted message and then passes the message
     along to the receiver. The receiver will receive the encrypted message, decrypt it, and then the
-     client “receives” the message (they are able to read it). 
+     client “receives” the message (they are able to read it).\newline
+    Against the man-in-the-middle attack, TSL has certificates available for use. We can use the
+     certificates to authenticate the two clients. Using this authentication, we can prevent 
+     man-in-the-middle attacks.
 	\item \textbf{Analysis}:
-\end{itemize}
+\end{enumerate}
 
 \end{document}
