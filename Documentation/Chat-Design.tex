@@ -1,5 +1,7 @@
 \documentclass{article}
 \usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{ {C:/Users/Kenny/Desktop/End2End/End2End_Chat/Documentation/Diagrams/}}
 \begin{document}
 End-to-End Secure Chat\newline
 
@@ -54,7 +56,9 @@ End-to-End Secure Chat\newline
 			\item Encryption cryptanalysis
 			\item Keylogger
 			\item DDOS
-			\item 
+			\item AWS breach
+			\item Eavesdropping
+			
         \end {itemize}
     \item \textbf {Related Previous Work}:
         \begin {itemize}
@@ -74,7 +78,7 @@ End-to-End Secure Chat\newline
     \item Against the man-in-the-middle attack, TLS has certificates available for use. We can use the
      certificates to authenticate the two clients. Using this authentication, we can prevent 
      man-in-the-middle attacks.\newline
-	\item Against brute force attack, we will use AES 256 bits encryption to encrypt the messages. To
+	\item We will use AES 256 bits encryption to encrypt the messages. To
      brute force an AES-256, it would take far too much money and energy, and far too long to be
       worth while. For this reason, AES-256 would achieve computational security for this project. 
       Using AES-256 also provides solution to the cryptanalysis vulnerability, as there are no known
@@ -99,5 +103,11 @@ End-to-End Secure Chat\newline
     \end {itemize}
 	
 \end{enumerate}
+Attack Tree \newline
+\includegraphics[width=\textwidth]{AttackTree.png}\newline
+System Diagram \newline
+\includegraphics[width=\textwidth]{SystemDiagram.png}\newline
+Authentication Use Case \newline
+\includegraphics[width=\textwidth]{UseCase.png}
 
 \end{document}
