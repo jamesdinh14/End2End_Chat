@@ -53,6 +53,7 @@ End-to-End Secure Chat\newline
 			\item Work station hijack
 			\item Encryption cryptanalysis
 			\item Keylogger
+			\item DDOS
 			\item 
         \end {itemize}
     \item \textbf {Related Previous Work}:
@@ -60,21 +61,25 @@ End-to-End Secure Chat\newline
             \item WhatsApp
             \item Signal
         \end {itemize}
-    \item \textbf {Solution:} The clients will hold a pair of keys that will encrypt and decrypt
+    \item \textbf {Solution:} 
+\begin{itemize}
+
+\item The clients will hold a pair of keys that will encrypt and decrypt
      messages on their end. 
     Example: Sender client sends a message to its receiver client. Sender will type up their message
     and “send” it. Before the message leaves the sender, the message is encrypted and then it gets
     sent to the server. The server will receive the encrypted message and then passes the message
     along to the receiver. The receiver will receive the encrypted message, decrypt it, and then the
      client “receives” the message (they are able to read it).\newline
-    Against the man-in-the-middle attack, TLS has certificates available for use. We can use the
+    \item Against the man-in-the-middle attack, TLS has certificates available for use. We can use the
      certificates to authenticate the two clients. Using this authentication, we can prevent 
      man-in-the-middle attacks.\newline
-	Against brute force attack, we will use AES 256 bits encryption to encrypt the messages. To
+	\item Against brute force attack, we will use AES 256 bits encryption to encrypt the messages. To
      brute force an AES-256, it would take far too much money and energy, and far too long to be
       worth while. For this reason, AES-256 would achieve computational security for this project. 
       Using AES-256 also provides solution to the cryptanalysis vulnerability, as there are no known
        cryptanalsys	against it.\newline
+\end{itemize}
 	
 	\item \textbf{Analysis}:
 	\begin {itemize}
