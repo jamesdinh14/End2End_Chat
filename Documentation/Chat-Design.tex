@@ -11,7 +11,7 @@ End-to-End Secure Chat\newline
 
 \textbf{THINGS TO ADD AND CHANGE}
 Add method to ensure for message integrity.\newline
-Change to local application.\newline
+Change to local application. \textbf{(check)}\newline
 improve authentication method.\newline
 add method to exchange public key.\newline
 
@@ -23,7 +23,7 @@ add method to exchange public key.\newline
      receives the message. The clients do not have to be active at the same time in order to receive
      messages.
 	\item \textbf{Language}: Java
-    \item \textbf{Platform}: Web app, Amazon AWS, Spring framework for Java, AES-256 encryption.
+    \item \textbf{Platform}: Desktop application, Amazon AWS, Spring framework for Java, AES-256 encryption.
     \item \textbf{RESTful server}:
     	\begin{itemize}
     		\item The server will manage each User of the chat. Each user will have its own ID and ?
@@ -90,6 +90,9 @@ add method to exchange public key.\newline
       worth while. For this reason, AES-256 would achieve computational security for this project. 
       Using AES-256 also provides solution to the cryptanalysis vulnerability, as there are no known
        cryptanalsys	against it.\newline
+    \item Use HMAC for integrity
+    \item If we go with registration (user id and password), consider using JWT, web tokens.
+    \item Look for something that provides key exchange. Something that uses PGP.
 \end{itemize}
 	
 	\item \textbf{Analysis}:
