@@ -1,10 +1,10 @@
 <?php
 require_once 'db/db_functions.php';
-require_once('vendor/autoload.php');
+require_once 'vendor/autoload.php';
 
 use \Firebase\JWT\JWT;
-define('SECRET_KEY', 'team_insecurity')
-define('ALGORITHM', 'HS256')
+// SECRET KEY HERE
+define('ALGORITHM', 'HS256');
 
 $db = new db_functions();
  
@@ -17,7 +17,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
     $username = $_POST['username'];
     $password = $_POST['password'];
  
-    // get the user by email and password
+    // get the user by username and password
     $user = $db->getUserByUsernameAndPassword($username, $password);
  
     if ($user != NULL) {
@@ -26,8 +26,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 	$issuedAt = time();
 	$notBefore = $issuedAt + 10; // Add 10 seconds
 	$expire = $notBefore + 7200; // Add 60 seconds
-	//$serverName = 'https://teaminsecurity.club';
-	$serverName = 'https://localhost';
+	$serverName = 'https://teaminsecurity.club';
+	//$serverName = 'https://localhost';
 
 	// Create the token as an array
 	$data = [
@@ -37,13 +37,13 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 		'nbf' => $notBefore, // Not before
 		'exp' => $expire, // Expiration
 		'data' => [
-			'username' => $row[0]['username'], // username from the users table
-			'name' => $row[0]['name'],
-			'email' => $row[0]['email']
+			'username' => $user['username'], // username from the users table
+			'name' => $user['name'],
+			'email' => $user['email']
 		]
 	];
 
-	$secretKey = base64_decode(SECRET_KEY);
+	$secretKey = base64_encode(SECRET_KEY);
 
 	// Transform the data array into a JWT
 	$jwt = 	JWT::encode(
@@ -51,11 +51,8 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 		   $secretKey, // signing key
 		   ALGORITHM
 		);
-	$unencodedArray = ['jwt' => $jwt];
 	
-	$response["error"] = FALSE;
-	$response["data"] = $data;
-	echo json_encode($response);
+	echo $jwt;
     } else {
         // user is not found with the credentials
         $response["error"] = TRUE;
