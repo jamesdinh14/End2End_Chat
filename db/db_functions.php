@@ -73,32 +73,36 @@ class db_functions {
     }
  
     /**
-     * Check user is existed or not
+     * Check user is existed or not, using either email or username
      */
-    public function isUserExisted($email) {
-        $stmt = $this->conn->prepare("SELECT email from users WHERE email = ?");
+    public function isUserExisted($email, $username=NULL) {
+
+	// If email and username is null, some error happened
+	if (is_null($email) && is_null($username)) {
+		return false;
+	}
+	
+	// Prep variable strings for the sql statement
+	$column_name = "email";
+	$seach_param = $email;
+
+	// If there's a value for username,
+	// search the database using the username rather than email
+	if (!empty($username)) {
+		$column_name = "username";
+		$search_param = $username;
+	}
+	
+	$sql_statement = "SELECT {$column_name} FROM users WHERE {$column_name} = ?";
+
+	$stmt = $this->conn->prepare($sql_statement);
+	$stmt->bind_param("s", $search_param);
+	
+        /* Old code
+	$stmt = $this->conn->prepare("SELECT email from users WHERE email = ?");
  
         $stmt->bind_param("s", $email);
- 
-        $stmt->execute();
- 
-        $stmt->store_result();
- 
-        if ($stmt->num_rows > 0) {
-            // user existed 
-            $stmt->close();
-            return true;
-        } else {
-            // user not existed
-            $stmt->close();
-            return false;
-        }
-    }
-
-    public function isUserExisted($username) {
-        $stmt = $this->conn->prepare("SELECT username from users WHERE username = ?");
- 
-        $stmt->bind_param("s", $username);
+	*/
  
         $stmt->execute();
  
