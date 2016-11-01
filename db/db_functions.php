@@ -119,9 +119,10 @@ class db_functions {
      * returns salt and encrypted password
      */
     public function hashSSHA($password) {
- 
+
         $salt = hash("sha256", mt_rand());
-        $salt = substr($salt, 0, 256);
+        $salt = substr($salt, 0, 128);
+	
         $encrypted = base64_encode(hash("sha256", $password . $salt) . $salt);
         $hash = array("salt" => $salt, "encrypted" => $encrypted);
         return $hash;

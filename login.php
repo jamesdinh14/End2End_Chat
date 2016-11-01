@@ -3,7 +3,7 @@ require_once 'db/db_functions.php';
 require_once 'vendor/autoload.php';
 
 use \Firebase\JWT\JWT;
-// SECRET KEY HERE
+// DEFINE SECRET_KEY HERE
 define('ALGORITHM', 'HS256');
 
 $db = new db_functions();
@@ -25,7 +25,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         $tokenId = base64_encode(mcrypt_create_iv(32));
 	$issuedAt = time();
 	$notBefore = $issuedAt + 10; // Add 10 seconds
-	$expire = $notBefore + 7200; // Add 60 seconds
+	$expire = $notBefore + 600; // Add 5 minutes
 	$serverName = 'https://teaminsecurity.club';
 
 	// Create the token as an array
@@ -42,12 +42,12 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 		]
 	];
 
-	$secretKey = base64_encode(SECRET_KEY);
+	//$secret_key = base64_encode(SECRET_KEY);
 
 	// Transform the data array into a JWT
 	$jwt = 	JWT::encode(
 		   $data, // data to be encoded in the JWT
-		   $secretKey, // signing key
+		   SECRET_KEY, // signing key
 		   ALGORITHM
 		);
 	
