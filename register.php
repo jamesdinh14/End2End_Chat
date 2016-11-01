@@ -14,7 +14,7 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
     $password = $_POST['password'];
     
     // Name is an optional parameter
-    $name = NULL;
+    $name = "";
     if (isset($_POST['name'])) {
 	$name = $_POST['name'];
     }
@@ -24,20 +24,22 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
         $response["error"] = TRUE;
         $response["error_msg"] = "User already existed with email, " . $email;
         echo json_encode($response);
-    } else if ($db->isUserExisted(null, $username)) {
+    } else if ($db->isUserExisted(NULL, $username)) {
     	// check for clash in usernames
 	$response["error"] = TRUE;
 	$response["error_msg"] = "User already exists with username, " . $username;
 	echo json_encode($response);
     } else {
         // create a new user
-        $user = $db->storeUser($username, $name, $email, $password);
+        $user = $db->storeUser($username, $email, $password, $name);
         if ($user) {
             // user stored successfully
             $response["error"] = FALSE;
             $response["username"] = $user["username"];
-            $response["user"]["name"] = $user["name"];
-            $response["user"]["email"] = $user["email"];
+	    $response["user"]["email"] = $user["email"];
+	    if ($name) {
+            	$response["user"]["name"] = $user["name"];
+	    }
             echo json_encode($response);
         } else {
             // user failed to store
@@ -48,7 +50,7 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
     }
 } else {
     $response["error"] = TRUE;
-    $response["error_msg"] = "Required parameters (username, name, email or password) is missing!";
+    $response["error_msg"] = "Required parameters (username, email or password) is missing!";
     echo json_encode($response);
 }
 ?>

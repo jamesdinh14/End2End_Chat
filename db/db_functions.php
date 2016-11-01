@@ -21,7 +21,7 @@ class db_functions {
      * Storing new user
      * returns user details
      */
-    public function storeUser($username, $name, $email, $password) {
+    public function storeUser($username, $email, $password, $name="") {
         $hash = $this->hashSSHA($password);
         $encrypted_password = $hash["encrypted"]; // encrypted password
         $salt = $hash["salt"]; // salt
@@ -77,7 +77,7 @@ class db_functions {
      */
     public function isUserExisted($email, $username=NULL) {
 
-	// If email and username is null, some error happened
+	// If email and username are null, some error happened
 	if (is_null($email) && is_null($username)) {
 		return false;
 	}
@@ -88,7 +88,7 @@ class db_functions {
 
 	// If there's a value for username,
 	// search the database using the username rather than email
-	if (!empty($username)) {
+	if (!is_null($username)) {
 		$column_name = "username";
 		$search_param = $username;
 	}
@@ -97,12 +97,6 @@ class db_functions {
 
 	$stmt = $this->conn->prepare($sql_statement);
 	$stmt->bind_param("s", $search_param);
-	
-        /* Old code
-	$stmt = $this->conn->prepare("SELECT email from users WHERE email = ?");
- 
-        $stmt->bind_param("s", $email);
-	*/
  
         $stmt->execute();
  
@@ -126,9 +120,9 @@ class db_functions {
      */
     public function hashSSHA($password) {
  
-        $salt = sha1(rand());
-        $salt = substr($salt, 0, 10);
-        $encrypted = base64_encode(sha1($password . $salt, true) . $salt);
+        $salt = hash("sha256", mt_rand());
+        $salt = substr($salt, 0, 256);
+        $encrypted = base64_encode(hash("sha256", $password . $salt) . $salt);
         $hash = array("salt" => $salt, "encrypted" => $encrypted);
         return $hash;
     }
@@ -140,7 +134,7 @@ class db_functions {
      */
     public function checkhashSSHA($salt, $password) {
  
-        $hash = base64_encode(sha1($password . $salt, true) . $salt);
+        $hash = base64_encode(hash("sha256", $password . $salt) . $salt);
  
         return $hash;
     }

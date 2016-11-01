@@ -27,7 +27,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 	$notBefore = $issuedAt + 10; // Add 10 seconds
 	$expire = $notBefore + 7200; // Add 60 seconds
 	$serverName = 'https://teaminsecurity.club';
-	//$serverName = 'https://localhost';
 
 	// Create the token as an array
 	$data = [
