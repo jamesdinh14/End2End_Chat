@@ -9,3 +9,13 @@ CREATE TABLE users (
    encrypted_password varchar(256) NOT NULL,
    salt varchar(128) UNIQUE NOT NULL
 ); 
+
+CREATE TABLE messages (
+	sender varchar(25) NOT NULL,
+	receiver varchar(25) NOT NULL,
+	created_at datetime,
+	content varchar(140),
+	FOREIGN KEY (sender) REFERENCES users(username),
+	FOREIGN KEY (receiver) REFERENCES users(username),
+	CONSTRAINT pk_message PRIMARY KEY(sender, receiver, created_at)
+);
