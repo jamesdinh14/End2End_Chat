@@ -25,8 +25,8 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
         echo json_encode($response);
     } else if ($db->isUserExisted(NULL, $username)) {
     	// check for clash in usernames
-	$response["error_msg"] = "User already exists with username, " . $username;
-	echo json_encode($response);
+	   $response["error_msg"] = "User already exists with username, " . $username;
+	   echo json_encode($response);
     } else {
         // create a new user
         $user = $db->storeUser($username, $email, $password, $name);
@@ -34,10 +34,10 @@ if (isset($_POST['username']) && isset($_POST['email']) && isset($_POST['passwor
             // user stored successfully
             $response["status"] = "success";
             $response["username"] = $user["username"];
-	    $response["user"]["email"] = $user["email"];
-	    if ($name) {
-            $response["user"]["name"] = $user["name"];
-	    }
+	        $response["user"]["email"] = $user["email"];
+    	    if ($name) {
+                $response["user"]["name"] = $user["name"];
+    	    }
             echo json_encode($response);
         } else {
             // user failed to store

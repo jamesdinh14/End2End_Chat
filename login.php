@@ -35,7 +35,6 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
 			'exp' => $expire, // Expiration
 			'data' => [
 				'username' => $user['username'], // username from the users table
-				'name' => $user['name'],
 			]
 		];
 

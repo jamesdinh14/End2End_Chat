@@ -26,7 +26,8 @@ class db_functions {
         $encrypted_password = $hash["encrypted"]; // encrypted password
         $salt = $hash["salt"]; // salt
  
-        $stmt = $this->conn->prepare("INSERT INTO users(username, name, email, encrypted_password, salt) VALUES(?, ?, ?, ?, ?)");
+        $sql_statement = "INSERT INTO users(username, name, email, encrypted_password, salt) VALUES(?, ?, ?, ?, ?)";
+        $stmt = $this->conn->prepare($sql_statement);
         $stmt->bind_param("sssss", $username, $name, $email, $encrypted_password, $salt);
         $result = $stmt->execute();
         $stmt->close();
@@ -43,6 +44,30 @@ class db_functions {
         } else {
             return false;
         }
+    }
+
+    /**
+     * Store new message
+     */
+    public function storeMessage($sender, $receiver, $content) {
+        $sql_statement = "INSERT INTO messages(sender, receiver, content, created_at) VALUES (?, ?, ?, NOW())";
+        $stmt = $this->conn->prepare($sql_statement);
+        echo $stmt;
+        $stmt->bind_param("sss", $sender, $receiver, $content);
+        echo $stmt;
+
+        $result = $stmt->execute();
+        $stmt->close();
+        //$response = array("status" => "error", "status_message" => "");
+
+        return $result;
+        // if ($result) {
+        //     return true;
+        // } else {
+        //     return false;
+        // }
+
+        
     }
  
     /**
@@ -77,26 +102,26 @@ class db_functions {
      */
     public function isUserExisted($email, $username=NULL) {
 
-	// If email and username are null, some error happened
-	if (is_null($email) && is_null($username)) {
-		return false;
-	}
-	
-	// Prep variable strings for the sql statement
-	$column_name = "email";
-	$seach_param = $email;
+    	// If email and username are null, some error happened
+        if (is_null($email) && is_null($username)) {
+    		return false;
+    	}
+    	
+    	// Prep variable strings for the sql statement
+    	$column_name = "email";
+    	$seach_param = $email;
 
-	// If there's a value for username,
-	// search the database using the username rather than email
-	if (!is_null($username)) {
-		$column_name = "username";
-		$search_param = $username;
-	}
+    	// If there's a value for username,
+    	// search the database using the username rather than email
+    	if (!is_null($username)) {
+    		$column_name = "username";
+    		$search_param = $username;
+	   }
 	
-	$sql_statement = "SELECT {$column_name} FROM users WHERE {$column_name} = ?";
+        $sql_statement = "SELECT {$column_name} FROM users WHERE {$column_name} = ?";
 
-	$stmt = $this->conn->prepare($sql_statement);
-	$stmt->bind_param("s", $search_param);
+        $stmt = $this->conn->prepare($sql_statement);
+    	$stmt->bind_param("s", $search_param);
  
         $stmt->execute();
  
@@ -139,7 +164,7 @@ class db_functions {
  
         return $hash;
     }
- 
+
 }
  
 ?>
