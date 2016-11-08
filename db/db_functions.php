@@ -49,7 +49,7 @@ class db_functions {
     /**
      * Store new message
      */
-    public function storeMessage($sender, $receiver, $content) {
+    public function sendMessage($sender, $receiver, $content) {
         $sql_statement = "INSERT INTO messages(sender, receiver, content, created_at) VALUES (?, ?, ?, NOW())";
         $stmt = $this->conn->prepare($sql_statement);
         echo $stmt;
