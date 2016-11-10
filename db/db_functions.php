@@ -52,9 +52,9 @@ class db_functions {
     public function sendMessage($sender, $receiver, $content) {
         $sql_statement = "INSERT INTO messages(sender, receiver, content, created_at) VALUES (?, ?, ?, NOW())";
         $stmt = $this->conn->prepare($sql_statement); // CODE STOPS HERE
-        echo $stmt;
+        echo "Statement prepared";
         $stmt->bind_param("sss", $sender, $receiver, $content);
-        echo $stmt;
+        echo "Params binded";
 
         $result = $stmt->execute();
         $stmt->close();
@@ -68,6 +68,26 @@ class db_functions {
         // }
 
         
+    }
+
+    /**
+     * Get new messages
+     */
+    public function getMessages($user, $sender="") {
+        $sql_statement = "SELECT sender, content FROM messages WHERE receiver = ? ORDER BY created_at ASC";
+        $stmt = $this->conn->prepare($sql_statement);
+        $stmt->bind_param("s", $user);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            while ($message = $result->fetch_assoc()) {
+                $messages[] = $message; // Append message to the messages array
+            }
+            return $messages;
+        }
+
+        return NULL;
     }
  
     /**

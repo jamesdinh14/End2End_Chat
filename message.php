@@ -69,9 +69,45 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 			echo "Receiver does not exist";
 		}
 	} catch (Exception $e) {
-		echo "Token could not be decoded";
+		echo "Token could not be decoded. " . $e->getMessage();
 	}
 }
 
+
+// Receive GET request
+if ($_SERVER["REQUEST_METHOD"] === "GET") {
+
+	// Extract JWT from GET request header
+	$http_headers = apache_request_headers();
+	$jwt_header = $http_headers['Authorization'];
+	$jwt = str_replace('Bearer ', '', $jwt_header);
+
+	try {
+		$token = JWT::decode($jwt, SECRET_KEY, array(ALGORITHM)); // Decode JWT
+		$token_data = (array) $token;
+
+		$user = $token_data["data"]->username;
+
+		if ($db->isUserExisted(NULL, $user)) {
+			$messages = $db->getMessages($user);
+			if ($messages) {
+				printMessages($messages);
+			} else {
+				echo "No new messages";
+			}
+		}
+	} catch (Exception $e) {
+		echo "Token could not be decoded. " . $e->getMessage();
+	}
+}
+
+function printMessages($messages) {
+	foreach ($messages as $message) {
+		foreach ($message as $key => $value) {
+			echo "{$key}: {$value}\n";
+		}
+		echo "\n";
+	}
+} 
 
 ?>
