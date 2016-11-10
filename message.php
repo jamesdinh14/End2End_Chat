@@ -40,27 +40,27 @@ if (isset($_POST["message"]) && isset($_POST["receiver"])) {
 }
 */
 
-
+// Receive POST request from Postman/client
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-	$http_headers = apache_request_headers();
-	$jwt_header = $http_headers['Authorization'];
-	$jwt = str_replace('Bearer ', '', $jwt_header);
+	$http_headers = apache_request_headers(); // Get all headers from POST
+	$jwt_header = $http_headers['Authorization']; // Get the Authorization header (should contain "Bearer <token>")
+	$jwt = str_replace('Bearer ', '', $jwt_header); // Get rid of "Bearer" leaving only the JWT
 	//$data = file_get_contents('php://input');
 
 	try {
-		$token = JWT::decode($jwt, SECRET_KEY, array(ALGORITHM));
-		$token_data = (array) $token;
+		$token = JWT::decode($jwt, SECRET_KEY, array(ALGORITHM)); // Decode the JWT, key and algorithm found in config.php
+		$token_data = (array) $token; // Convert payload into array
 
-		$sender = $token_data["data"]->username;
+		$sender = $token_data["data"]->username; // Access the sender's username from the JWT
 
-		$message = $_POST["message"];
+		$message = $_POST["message"]; // Receive params from the POST request
 		$receiver = $_POST["receiver"];
 
-		//$stuff = array("jwt" => $jwt, "post params" => $data, "sender" => $sender, "message" => $message, "receiver" => $receiver);
-		//print_r($stuff);
+		$stuff = array("jwt" => $jwt, "post params" => $data, "sender" => $sender, "message" => $message, "receiver" => $receiver);
+		print_r($stuff);
 
 		if ($db->isUserExisted(NULL, $receiver)) {
-			if ($db->sendMessagw($sender, $receiver, $message)) {
+			if ($db->sendMessage($sender, $receiver, $message)) {
 				echo "Message sent";
 			} else {
 				echo "Message failed to send";

@@ -51,7 +51,7 @@ class db_functions {
      */
     public function sendMessage($sender, $receiver, $content) {
         $sql_statement = "INSERT INTO messages(sender, receiver, content, created_at) VALUES (?, ?, ?, NOW())";
-        $stmt = $this->conn->prepare($sql_statement);
+        $stmt = $this->conn->prepare($sql_statement); // CODE STOPS HERE
         echo $stmt;
         $stmt->bind_param("sss", $sender, $receiver, $content);
         echo $stmt;
