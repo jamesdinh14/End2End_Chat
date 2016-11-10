@@ -51,23 +51,13 @@ class db_functions {
      */
     public function sendMessage($sender, $receiver, $content) {
         $sql_statement = "INSERT INTO messages(sender, receiver, content, created_at) VALUES (?, ?, ?, NOW())";
-        $stmt = $this->conn->prepare($sql_statement); // CODE STOPS HERE
-        echo "Statement prepared";
+        $stmt = $this->conn->prepare($sql_statement);
         $stmt->bind_param("sss", $sender, $receiver, $content);
-        echo "Params binded";
 
         $result = $stmt->execute();
         $stmt->close();
-        //$response = array("status" => "error", "status_message" => "");
 
-        return $result;
-        // if ($result) {
-        //     return true;
-        // } else {
-        //     return false;
-        // }
-
-        
+        return $result;        
     }
 
     /**
