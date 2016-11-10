@@ -22,7 +22,7 @@ if (isset($_POST['username']) && isset($_POST['password'])) {
         // user is found
         $tokenId = base64_encode(mcrypt_create_iv(32));
 		$issuedAt = time();
-		$notBefore = $issuedAt + 10; // Add 10 seconds
+		$notBefore = $issuedAt;
 		$expire = $notBefore + 1800; // Add 30 minutes
 		$serverName = 'https://teaminsecurity.club';
 
