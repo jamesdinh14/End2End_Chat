@@ -19,11 +19,18 @@ import okhttp3.Response;
  */
 public class javaClientForPHPService {
   public static final MediaType mediaType = MediaType.parse("multipart/form-data; boundary=---011000010111000001101001");
+  /* commented out non working dynamic input with json.
+  public static final MediaType JSON
+      = MediaType.parse("application/json; charset=utf-8");
+*/
 
   OkHttpClient client = new OkHttpClient();
 
   String post(String url) throws IOException {
     RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\nme1\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"email\"\r\n\r\nme2\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\nme3\r\n-----011000010111000001101001--");
+    /*
+    RequestBody body = RequestBody.create(JSON, json);
+    */
     Request request = new Request.Builder()
         .url(url)
         .post(body)
@@ -32,18 +39,19 @@ public class javaClientForPHPService {
       return response.body().string();
     }
   }
-
+//register() is suppose to fill in json body
   String register(String name, String email, String password) {
-        return "{'username':'HIGH_SCORE',"
-        + "'email':'Bowling',"
-        + "'password':4"
+        return "{'username':'testclient',"
+        + "'email':'testclientemail',"
+        + "'password':'testpassword'"
         + "}";
   }
 
   public static void main(String[] args) throws IOException {
    javaClientForPHPService example = new javaClientForPHPService();
-    String json = example.register("clienttest", "clientemail","clientpassword");
+   // String json = example.register("clienttest", "clientemail","clientpassword");
     String response = example.post("https://teaminsecurity.club/login_api/register.php");
+    //String response = example.post("https://teaminsecurity.club/login_api/register.php", json);
     System.out.println(response);
   }
 }
