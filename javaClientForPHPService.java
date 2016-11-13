@@ -27,7 +27,7 @@ public class javaClientForPHPService {
 
   OkHttpClient client = new OkHttpClient();
 
-  String post(String url, String username, String email, String password) throws IOException {
+  String registerPost(String url, String username, String email, String password) throws IOException {
     RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\n"+username+"\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"email\"\r\n\r\n"+email+"\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n"+password+"\r\n-----011000010111000001101001--");
     /*
     RequestBody body = RequestBody.create(JSON, json);
@@ -40,26 +40,36 @@ public class javaClientForPHPService {
       return response.body().string();
     }
   }
-//register() is suppose to fill in json body
-  String register(String name, String email, String password) {
-        return "{'username':'testclient',"
-        + "'email':'testclientemail',"
-        + "'password':'testpassword'"
-        + "}";
-  }
-
-  public static void main(String[] args) throws IOException {
-   javaClientForPHPService example = new javaClientForPHPService();
-   // String json = example.register("clienttest", "clientemail","clientpassword");
-    Scanner sc = new Scanner(System.in);
-    System.out.print("enter username: ");
-    String uname= sc.nextLine();
-    System.out.print("enter email");
-    String umail = sc.nextLine();
-    System.out.print("enter password");
-    String upass = sc.nextLine();
-    String response = example.post("https://teaminsecurity.club/login_api/register.php",uname,umail,upass);
-    //String response = example.post("https://teaminsecurity.club/login_api/register.php", json);
-    System.out.println(response);
-  }
+ String loginPost(String url, String username, String password) throws IOException{
+     RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\n"+username+"\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n"+password+"\r\n-----011000010111000001101001--");
+    Request request = new Request.Builder()
+        .url(url)
+        .post(body)
+        .build();
+    try (Response response = client.newCall(request).execute()) {
+      return response.body().string();
+    }
+ }
+String messagePost(String url,String JWT, String message, String receiver) throws IOException{
+    RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"receiver\"\r\n\r\n"+receiver+"\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"message\"\r\n\r\n"+message+"\r\n-----011000010111000001101001--");
+    Request request = new Request.Builder()
+        .url(url)
+        .post(body)
+        .addHeader("authorization", JWT)
+        .build();
+    try (Response response = client.newCall(request).execute()) {
+      return response.body().string();
+   }
+}
+String messageGET(String url, String key) throws IOException{
+   Request request = new Request.Builder()
+    .url(url)
+    .get()
+    .addHeader("authorization", key)
+    .build();
+     try (Response response = client.newCall(request).execute()) {
+      return response.body().string();
+    }
+}
+ 
 }
