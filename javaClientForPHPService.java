@@ -18,8 +18,7 @@ import okhttp3.Response;
  *
  * @author Kenny
  */
-public class javaClientForPHPService {
-  public static final MediaType mediaType = MediaType.parse("multipart/form-data; boundary=---011000010111000001101001");
+public class javaClientForPHPService {   
   /* commented out non working dynamic input with json.
   public static final MediaType JSON
       = MediaType.parse("application/json; charset=utf-8");
@@ -27,8 +26,13 @@ public class javaClientForPHPService {
 
   OkHttpClient client = new OkHttpClient();
 
-  String registerPost(String url, String username, String email, String password) throws IOException {
-    RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\n"+username+"\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"email\"\r\n\r\n"+email+"\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n"+password+"\r\n-----011000010111000001101001--");
+  String registerPost(String url, String username, String email, String password) throws IOException {   
+    RequestBody body = new FormBody.Builder()
+       .add("username", username)
+       .add("email", email)
+       .add("password", password)
+       .build();
+    
     /*
     RequestBody body = RequestBody.create(JSON, json);
     */
@@ -40,8 +44,11 @@ public class javaClientForPHPService {
       return response.body().string();
     }
   }
- String loginPost(String url, String username, String password) throws IOException{
-     RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"username\"\r\n\r\n"+username+"\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"password\"\r\n\r\n"+password+"\r\n-----011000010111000001101001--");
+ String loginPost(String url, String username, String password) throws IOException {
+    RequestBody body = new FormBody.Builder()
+       .add("username", username)
+       .add("password", password)
+       .build();
     Request request = new Request.Builder()
         .url(url)
         .post(body)
@@ -50,18 +57,21 @@ public class javaClientForPHPService {
       return response.body().string();
     }
  }
-String messagePost(String url,String JWT, String message, String receiver) throws IOException{
-    RequestBody body = RequestBody.create(mediaType, "-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"receiver\"\r\n\r\n"+receiver+"\r\n-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"message\"\r\n\r\n"+message+"\r\n-----011000010111000001101001--");
+String messagePost(String url,String JWT, String message, String receiver) throws IOException {
+    RequestBody body = new FormBody.Builder()
+    .add("receiver", receiver)
+    .add("message", message)
+    .build();
     Request request = new Request.Builder()
         .url(url)
         .post(body)
-        .addHeader("authorization", JWT)
+        .addHeader("authorization", "Bearer " + JWT)
         .build();
     try (Response response = client.newCall(request).execute()) {
       return response.body().string();
    }
 }
-String messageGET(String url, String key) throws IOException{
+String messageGET(String url, String key) throws IOException {
    Request request = new Request.Builder()
     .url(url)
     .get()

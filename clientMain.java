@@ -24,6 +24,8 @@ public class clientMain {
     System.out.print("enter password");
     String upass = sc.nextLine();
     String response = example.registerPost("https://teaminsecurity.club/login_api/register.php",uname,umail,upass);
+    System.out.println(response);
+    
     System.out.print("login user: ");
     String logU = sc.nextLine();
     System.out.print("login password: ");
