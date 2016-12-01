@@ -14,6 +14,7 @@ import java.util.Scanner;
  */
 public class clientMain {
    public static void main(String[] args) throws IOException {
+	   /**
       javaClientForPHPService example = new javaClientForPHPService();
       ClientEncryption test = ClientEncryption.getEncryptionInstance();
       String encryptedMessage= null;
@@ -49,7 +50,7 @@ public class clientMain {
     	  e.printStackTrace();
       }
       try {
-		hmacTag = test.HmacSHA256(encryptedMessage,test.getIntegrityKey());
+		hmacTag = test.HmacSHA256(encryptedMessage, test.getIntegrityKey());
 	} catch (Exception e) {
 	
 		e.printStackTrace();
@@ -58,27 +59,32 @@ public class clientMain {
       String metadata= test.CipherTagConcatenate(hmacTag, encryptedMessage);
       response = example.messagePost("https://teaminsecurity.club/login_api/message.php", JWT, metadata, receiver);
       System.out.println(response);
-
-     /** System.out.print("Enter JWT(should be automated): ");
+	
+     System.out.print("Enter JWT(should be automated): ");
       String JWT1 = sc.nextLine();
       response = example.messageGET(url, JWT1);
-
+       */
       ClientEncryption ce = ClientEncryption.getEncryptionInstance();
-      String plaintext = "0", ciphertext = "0";
+      String plaintext = "0", ciphertext = "0", hmacTag="0";
       try {
          ciphertext = ce.encrypt("Hello, world");
       } catch (Exception e) {
          e.printStackTrace();
       }
-      System.out.println(ciphertext);
-
+      System.out.println("ciphertext is " + ciphertext);
+      try {
+  		hmacTag = ce.HmacSHA256(ciphertext, ce.getIntegrityKey());
+  	} catch (Exception e) {
+  	
+  		e.printStackTrace();
+  	}
+      System.out.println("hamc is "+hmacTag);
       try {
          plaintext = ce.decrypt(ciphertext, ce.getEncryptionKey());
       } catch (Exception e) {
          e.printStackTrace();
       }
       System.out.println(plaintext);
-      */
    }
 
 }
