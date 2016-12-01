@@ -21,7 +21,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.crypto.spec.PBEKeySpec;
-import org.apache.commons.codec.binary.Base64;
+
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
@@ -186,14 +186,18 @@ public class ClientEncryption {
    /**
    * HMAC SHA 256
    */
-   public String HmacSHA256(String ciphertext) throws Exception{
+   public String HmacSHA256(String ciphertext, Key integrityKey) throws Exception{
+	  byte[] ik = integrityKey.getEncoded();
       Mac sha256_HMAC= Mac.getInstance("HmacSHA256");
-      mac.init(new SecretKeySpec(integrityKey, "HmacSHA256"));
-      return String tag= Base64.encodeBase64String(sha256_HMAC.doFinal(ciphertext.getBytes()));
+      SecretKeySpec sk = new SecretKeySpec(ik, "HmacSHA256");
+      sha256_HMAC.init(sk);
+      String tag= Base64.toBase64String(sha256_HMAC.doFinal(ciphertext.getBytes()));
+      return tag;
    }
    
    public String CipherTagConcatenate(String ciphertext, String HmacTag){
-	   return String combined = ciphertext+HmacTag; // error here
+	   String combined = ciphertext+HmacTag;
+	   return combined; 
    }
    
    public void HmacVerify(String tag1, String tag2){
@@ -216,5 +220,8 @@ public class ClientEncryption {
    
    public Key getEncryptionKey() {
       return encryptionKey;
+   }
+   public Key getIntegrityKey() {
+	  return integrityKey;
    }
 }

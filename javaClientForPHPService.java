@@ -19,11 +19,7 @@ import okhttp3.Response;
  * @author Kenny
  */
 public class javaClientForPHPService {   
-  /* commented out non working dynamic input with json.
-  public static final MediaType JSON
-      = MediaType.parse("application/json; charset=utf-8");
-*/
-
+ 
   OkHttpClient client = new OkHttpClient();
 
   String registerPost(String url, String username, String email, String password) throws IOException {   
@@ -32,10 +28,7 @@ public class javaClientForPHPService {
        .add("email", email)
        .add("password", password)
        .build();
-    
-    /*
-    RequestBody body = RequestBody.create(JSON, json);
-    */
+  
     Request request = new Request.Builder()
         .url(url)
         .post(body)
