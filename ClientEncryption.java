@@ -188,8 +188,8 @@ public class ClientEncryption {
    */
    public String HmacSHA256(String ciphertext) throws Exception{
       Mac sha256_HMAC= Mac.getInstance("HmacSHA256");
-      mac.init(new SecretKeySpec(integrityKey, "HmacSHA256");
-      return String tag= Base64.encodeBase64String(sha256_HMAC.doFinal(ciphertext.getBytes());
+      mac.init(new SecretKeySpec(integrityKey, "HmacSHA256"));
+      return String tag= Base64.encodeBase64String(sha256_HMAC.doFinal(ciphertext.getBytes()));
    }
    
    public String CipherTagConcatenate(String ciphertext, String HmacTag){
