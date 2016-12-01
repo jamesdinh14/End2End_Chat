@@ -58,7 +58,7 @@ public class ClientEncryption {
       String cipherTransformation = ENCRYPTION_ALGORITHM + "/" + ENCRYPTION_MODE + "/" + ENCRYPTION_PADDING;
       cipher = Cipher.getInstance(cipherTransformation, provider);
       encryptionKey = generateKey();
-//      integrityKey = generateKey();
+      integrityKey = generateKey();
    }
    
    /**
@@ -186,8 +186,8 @@ public class ClientEncryption {
    /**
    * HMAC SHA 256
    */
-   public String HmacSHA256(String ciphertext, Key integrityKey) throws Exception{
-	  byte[] ik = integrityKey.getEncoded();
+   public String HmacSHA256(String ciphertext, Key intkey) throws Exception{
+	  byte[] ik = intkey.getEncoded();
       Mac sha256_HMAC= Mac.getInstance("HmacSHA256");
       SecretKeySpec sk = new SecretKeySpec(ik, "HmacSHA256");
       sha256_HMAC.init(sk);
