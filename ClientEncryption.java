@@ -58,7 +58,7 @@ public class ClientEncryption {
       String cipherTransformation = ENCRYPTION_ALGORITHM + "/" + ENCRYPTION_MODE + "/" + ENCRYPTION_PADDING;
       cipher = Cipher.getInstance(cipherTransformation, provider);
       encryptionKey = generateKey();
-//      integrityKey = generateKey();
+      integrityKey = generateKey();
    }
    
    /**
@@ -205,17 +205,6 @@ public class ClientEncryption {
 		   System.out.println("Hmac test passed!");
 	   } else
 	      System.out.println("HMAC does not match!");
-   }
-   
-   private char[] getRandomPassword() {
-      char[] randomPassword = new char[PASSWORD_LENGTH];
-      
-      Random random = new Random();
-      for (int i = 0; i < PASSWORD_LENGTH; i++) {
-         randomPassword[i] = (char)(random.nextInt('~' - '!' + 1) + '!');
-      }
-      
-      return randomPassword;
    }
    
    public Key getEncryptionKey() {

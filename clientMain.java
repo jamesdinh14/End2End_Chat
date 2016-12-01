@@ -20,28 +20,29 @@ public class clientMain {
       String hmacTag = null;
       Scanner sc = new Scanner(System.in);
       
-      System.out.print("enter username: ");
-      String uname = sc.nextLine();
-      System.out.print("enter email");
-      String umail = sc.nextLine();
-      System.out.print("enter password");
-      String upass = sc.nextLine();
-      String response = example.registerPost("https://teaminsecurity.club/login_api/register.php", uname, umail, upass);
-      System.out.println(response);
+//      System.out.print("enter username: ");
+//      String uname = sc.nextLine();
+//      System.out.print("enter email");
+//      String umail = sc.nextLine();
+//      System.out.print("enter password");
+//      String upass = sc.nextLine();
+//      String response = example.registerPost("https://teaminsecurity.club/login_api/register.php", uname, umail, upass);
+//      System.out.println(response);
 
       System.out.print("login user: ");
       String logU = sc.nextLine();
       System.out.print("login password: ");
       String logP = sc.nextLine();
-      response = example.loginPost("https://teaminsecurity.club/login_api/login.php", logU, logP);
+      String response = example.loginPost("https://teaminsecurity.club/login_api/login.php", logU, logP);
       System.out.println(response);
+      String JWT = response;
      
       System.out.print("enter message: ");
       String message = sc.nextLine();
       System.out.print("enter receiver: ");
       String receiver = sc.nextLine();
-      System.out.print("enter JWT(should be automated): ");
-      String JWT = sc.nextLine();
+//      System.out.print("enter JWT(should be automated): ");
+//      String JWT = sc.nextLine();
       try{
        encryptedMessage = test.encrypt(message);
       }catch(Exception e){
