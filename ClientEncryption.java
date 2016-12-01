@@ -14,6 +14,8 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
@@ -158,5 +160,22 @@ public class ClientEncryption {
       random.nextBytes(ivBytes);
       
       return new IvParameterSpec(ivBytes);
+   }
+   /**
+   * HMAC SHA 256
+   */
+   public String HmacSHA256(String ciphertext) throws Exception{
+   Mac sha256_HMAC= Mac.getInstance("HmacSHA256");
+   mac.init(new SecretKeySpec(integrityKey, "HmacSHA256");
+   return String tag= Base64.encodeBase64String(sha256_HMAC.doFinal(ciphertext.getBytes());
+   }
+   public String CipherTagConcatenate(String ciphertext, String HmacTag){
+	   return String combined = ciphertext+HmacTag;
+   }
+   public void HmacVerify(String tag1, String tag2){
+	   if(tag1.equals(tag2)){
+		   System.out.println("Hmac test passed!");
+	   }
+	   else System.out.println("HMAC does not match!");
    }
 }
