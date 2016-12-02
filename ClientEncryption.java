@@ -7,20 +7,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.security.spec.KeySpec;
-import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-import javax.crypto.spec.PBEKeySpec;
 
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
@@ -44,11 +39,10 @@ public class ClientEncryption {
    private static final String provider = "BC"; //Bouncy Castle
    private static final int KEY_SIZE = 256; // bits
    private static final int IV_SIZE = 16; // IV size = 16 bytes or 128 bits
-   private static final int PASSWORD_LENGTH = 16; // Used for random password
    
    // Security instance variables
    private Cipher cipher;
-   private Key encryptionKey;
+   private Key encryptionKey; // consider removing these keys after key exchange works
    private Key integrityKey;
    
    private static ClientEncryption encryptionInstance = null;
@@ -57,17 +51,17 @@ public class ClientEncryption {
       Security.addProvider(new BouncyCastleProvider());
       String cipherTransformation = ENCRYPTION_ALGORITHM + "/" + ENCRYPTION_MODE + "/" + ENCRYPTION_PADDING;
       cipher = Cipher.getInstance(cipherTransformation, provider);
-      encryptionKey = generateKey();
       integrityKey = generateKey();
    }
    
    /**
     * Performs initialization on first call
+    * Only accessible by this class or package
     * Returns already initialized object on later calls
     * 
     * @return the one instance of this class
     */
-   public static ClientEncryption getEncryptionInstance() {
+   static ClientEncryption getEncryptionInstance() {
       try {
          if (encryptionInstance == null) {
             encryptionInstance = new ClientEncryption();
@@ -102,10 +96,16 @@ public class ClientEncryption {
     * @throws InvalidKeyException 
     * @throws BadPaddingException 
     * @throws IllegalBlockSizeException 
+    * @throws NoSuchProviderException 
+    * @throws NoSuchAlgorithmException 
     */
    public String encrypt(String plaintext) throws InvalidKeyException,
-      InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException {
+         InvalidAlgorithmParameterException, IllegalBlockSizeException,
+         BadPaddingException, NoSuchAlgorithmException, NoSuchProviderException {
       IvParameterSpec iv = generateIV();
+      
+      // Generate FRESH key for every encrypted message
+      encryptionKey = generateKey(); 
       
       cipher.init(Cipher.ENCRYPT_MODE, encryptionKey, iv);
       byte[] encryptedMessage = cipher.doFinal(plaintext.getBytes());

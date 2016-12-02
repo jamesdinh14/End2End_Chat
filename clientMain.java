@@ -14,7 +14,7 @@ import java.util.Scanner;
  */
 public class clientMain {
    public static void main(String[] args) throws IOException {
-	   /**
+	   /*
       javaClientForPHPService example = new javaClientForPHPService();
       ClientEncryption test = ClientEncryption.getEncryptionInstance();
       String encryptedMessage= null;
