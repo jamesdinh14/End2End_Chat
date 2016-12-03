@@ -197,7 +197,7 @@ public class ClientKeyExchange {
     */
    public static void QRGeneration(String publicKey) {
 		String myCodeText = publicKey;
-		String filePath = "C:/Users/Kenny/workspace/kkkk/RsaQR.png";
+		String filePath = "RsaQR.png";
 		int size = 250;
 		String fileType = "png";
 		File myFile = new File(filePath);
