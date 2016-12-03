@@ -74,20 +74,6 @@ public class ClientEncryption {
    }
    
    /**
-    * Re-initializes the instance
-    * Use to refresh the instance if any of the security variables need to be changed (i.e. keys)
-    * @return a re-initialized instance of this class
-    */
-   public static ClientEncryption resetEncryptionInstance() {
-      try {
-         encryptionInstance = new ClientEncryption();
-      } catch (Exception e) {
-         e.printStackTrace();
-      }
-      return encryptionInstance;
-   }
-   
-   /**
     * Encrypt the given plaintext
     * 
     * @param message - message to be encrypted
@@ -187,7 +173,7 @@ public class ClientEncryption {
    * HMAC SHA 256
    */
    public String HmacSHA256(String ciphertext, Key intkey) throws Exception{
-	  byte[] ik = intkey.getEncoded();
+      byte[] ik = intkey.getEncoded();
       Mac sha256_HMAC= Mac.getInstance("HmacSHA256");
       SecretKeySpec sk = new SecretKeySpec(ik, "HmacSHA256");
       sha256_HMAC.init(sk);

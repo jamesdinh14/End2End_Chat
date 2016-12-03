@@ -6,7 +6,11 @@
 package JavaClientforPHP;
 
 import java.io.IOException;
+import java.security.InvalidKeyException;
 import java.util.Scanner;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
 
 /**
  *
@@ -85,6 +89,21 @@ public class clientMain {
          e.printStackTrace();
       }
       System.out.println(plaintext);
+      
+      System.out.println("Test RSA");
+      ClientKeyExchange cke = ClientKeyExchange.getKeyExchangeInstance();
+      try {
+         String cipherKeys = cke.encrypt("Hello world", cke.getMyPublicKey());
+         System.out.println(cipherKeys);
+         
+         String plainKeys = cke.decrypt(cipherKeys);
+         System.out.println(plainKeys);
+      } catch (Exception e) {
+         e.printStackTrace();
+      }
+      
    }
+   
+   
 
 }
