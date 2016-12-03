@@ -96,6 +96,8 @@ public class clientMain {
          String cipherKeys = cke.encrypt("Hello world", cke.getMyPublicKey());
          System.out.println(cipherKeys);
          
+         cke.QRGeneration(cipherKeys);
+         
          String plainKeys = cke.decrypt(cipherKeys);
          System.out.println(plainKeys);
       } catch (Exception e) {
