@@ -55,9 +55,9 @@ public class javaClientForPHPService {
       }
    }
 
-   String messageGET(String url, String key) throws IOException {
+   String messageGET(String url, String JWT) throws IOException {
       Request request = new Request.Builder().url(url).get()
-            .addHeader("authorization", key).build();
+            .header("Authorization", "Bearer " + JWT).build();
       try (Response response = client.newCall(request).execute()) {
          return response.body().string();
       }

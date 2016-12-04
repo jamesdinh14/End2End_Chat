@@ -11,6 +11,7 @@ import java.util.Scanner;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -18,56 +19,90 @@ import javax.crypto.IllegalBlockSizeException;
  */
 public class clientMain {
    public static void main(String[] args) throws IOException {
-	   /*
+	   
+	
       javaClientForPHPService example = new javaClientForPHPService();
-      ClientEncryption test = ClientEncryption.getEncryptionInstance();
+//      ClientEncryption test = ClientEncryption.getEncryptionInstance();
+      EncryptionUtil eu = EncryptionUtil.getEncryptionUtilInstance();
       String encryptedMessage= null;
       String hmacTag = null;
       Scanner sc = new Scanner(System.in);
+      String selection = null;
+      boolean ex = true;
+      String myUsername = null;
+      String JWT = null;
+      do{
+      selection = JOptionPane.showInputDialog(null, "Type the what you want to do. Register, Login, Send message, Read message.");
+      selection.toLowerCase();
+      switch (selection) {
       
-//      System.out.print("enter username: ");
-//      String uname = sc.nextLine();
-//      System.out.print("enter email");
-//      String umail = sc.nextLine();
-//      System.out.print("enter password");
-//      String upass = sc.nextLine();
-//      String response = example.registerPost("https://teaminsecurity.club/login_api/register.php", uname, umail, upass);
-//      System.out.println(response);
-
-      System.out.print("login user: ");
-      String logU = sc.nextLine();
-      System.out.print("login password: ");
-      String logP = sc.nextLine();
-      String response = example.loginPost("https://teaminsecurity.club/login_api/login.php", logU, logP);
-      System.out.println(response);
-      String JWT = response;
+      case "register":
+      String uname = JOptionPane.showInputDialog(null, "Type in your Username.");
+      String umail = JOptionPane.showInputDialog(null, "Type in your email.");
+      String upass = JOptionPane.showInputDialog(null, "Type in your password.");
+      String response = example.registerPost("https://teaminsecurity.club/login_api/register.php", uname, umail, upass);
+      JOptionPane.showMessageDialog(null, response);
+      break;
+      
+      
+      
+      case "login":
      
-      System.out.print("enter message: ");
-      String message = sc.nextLine();
-      System.out.print("enter receiver: ");
-      String receiver = sc.nextLine();
-//      System.out.print("enter JWT(should be automated): ");
-//      String JWT = sc.nextLine();
-      try{
-       encryptedMessage = test.encrypt(message);
-      }catch(Exception e){
-    	  e.printStackTrace();
-      }
-      try {
-		hmacTag = test.HmacSHA256(encryptedMessage, test.getIntegrityKey());
-	} catch (Exception e) {
-	
-		e.printStackTrace();
-	}
+      String logU = JOptionPane.showInputDialog(null, "Type in your username.");
+      String logP = JOptionPane.showInputDialog(null, "Type in your password.");
+      response = example.loginPost("https://teaminsecurity.club/login_api/login.php", logU, logP);
+      JOptionPane.showMessageDialog(null, response);
+      myUsername = logU;
+      JWT = response;
+      break;
       
-      String metadata= test.CipherTagConcatenate(hmacTag, encryptedMessage);
-      response = example.messagePost("https://teaminsecurity.club/login_api/message.php", JWT, metadata, receiver);
-      System.out.println(response);
-	
+      
+      
+      case "send": 
+    	
+      String message = JOptionPane.showInputDialog(null, "Type your message.");
+      String receiver = JOptionPane.showInputDialog(null, "Type who you want to send the message to.");
+//          try{
+//           encryptedMessage = test.encrypt(message);
+//          }catch(Exception e){
+//        	  e.printStackTrace();
+//          }
+//          try {
+//    		hmacTag = test.HmacSHA256(encryptedMessage, test.getIntegrityKey());
+//    	} catch (Exception e) {
+//    	
+//    		e.printStackTrace();
+//    	}
+      
+      String eMessage = null;
+      try {
+         eu.addPublicKey(myUsername, eu.getMyPublicKey());
+         eMessage = eu.encryptMessage(message, receiver);
+      } catch (Exception e) {
+         e.getMessage();
+         e.printStackTrace();
+      }
+      
+//      String metadata= test.CipherTagConcatenate(hmacTag, encryptedMessage);
+      response = example.messagePost("https://teaminsecurity.club/login_api/message.php", JWT, eMessage, receiver);
+      JOptionPane.showMessageDialog(null, response);
+      break;
+      
+      
+      
+      default:
+    	  JOptionPane.showMessageDialog(null, "wrong input");
+    	    JOptionPane.showMessageDialog(null, selection);
+          break;
+      }
+      }while(ex==true);
+      
+      
+      /**
      System.out.print("Enter JWT(should be automated): ");
       String JWT1 = sc.nextLine();
       response = example.messageGET(url, JWT1);
-       */
+     
       ClientEncryption ce = ClientEncryption.getEncryptionInstance();
       String plaintext = "0", ciphertext = "0", hmacTag="0";
       try {
@@ -103,7 +138,7 @@ public class clientMain {
       } catch (Exception e) {
          e.printStackTrace();
       }
-      
+    */  
    }
    
    
