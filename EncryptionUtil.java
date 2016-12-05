@@ -25,6 +25,7 @@ import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
@@ -41,9 +42,9 @@ import javax.crypto.spec.SecretKeySpec;
 import javax.imageio.ImageIO;
 
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+//import org.bouncycastle.util.Arrays;
 import org.bouncycastle.util.encoders.Base64;
 
-import sun.security.pkcs11.SunPKCS11;
 import JavaClientforPHP.EncryptionUtil.ClientEncryption.EncryptionKeys;
 
 import com.google.zxing.BarcodeFormat;
@@ -427,7 +428,7 @@ public class EncryptionUtil {
       }
       
       public boolean HmacVerify(byte[] tag1, byte[] tag2){
-         return tag1.equals(tag2);
+         return Arrays.equals(tag1, tag2);
       }
       
       public Key getEncryptionKey() {
