@@ -64,7 +64,7 @@ class db_functions {
      * Get new messages
      */
     public function getMessages($user, $sender="") {
-        $sql_statement = "SELECT sender, content FROM messages WHERE receiver = ? ORDER BY created_at ASC";
+        $sql_statement = "SELECT sender, content, created_at FROM messages WHERE receiver = ? ORDER BY created_at ASC";
         $stmt = $this->conn->prepare($sql_statement);
         $stmt->bind_param("s", $user);
         $stmt->execute();
