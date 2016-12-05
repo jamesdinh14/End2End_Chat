@@ -94,9 +94,15 @@ public class clientMain {
          String messages = example.messageGET(url, JWT);
          ServerMessageParser smp = new ServerMessageParser();
          smp.parse(messages);
+         
          for (Message m : smp.getConversation()) {
-            m.decryptContents(eu);
-            System.out.println(m.toString());
+            try {
+               m.decryptContents(eu);
+               System.out.println(m.toString());
+            } catch (Exception e) {
+               e.getMessage();
+               e.printStackTrace();
+            }
          }
          
          break;

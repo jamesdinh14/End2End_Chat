@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Collection of parsing classes to fully parse through the messages from the server
+ * Class that will fully parse through the messages from the server
  * @author James
  *
  */

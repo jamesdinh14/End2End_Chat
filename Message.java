@@ -34,7 +34,7 @@ public class Message {
       try {
          for (String key : message.keySet()) {
             if (key.equals(ENCRYPTED_FIELD_KEY)) {
-               message.replace("key", eu.decryptMessage(message.get(key)));
+               message.replace(key, eu.decryptMessage(message.get(key)));
             }
          }
       } catch (Exception e) {

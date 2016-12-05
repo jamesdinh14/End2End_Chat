@@ -3,12 +3,12 @@ package JavaClientforPHP;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -28,7 +28,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Scanner;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -44,7 +43,7 @@ import javax.imageio.ImageIO;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.bouncycastle.util.encoders.Base64;
 
-import sun.misc.IOUtils;
+import sun.security.pkcs11.SunPKCS11;
 import JavaClientforPHP.EncryptionUtil.ClientEncryption.EncryptionKeys;
 
 import com.google.zxing.BarcodeFormat;
@@ -83,7 +82,7 @@ public class EncryptionUtil {
    // Define variables for use in RSA key exchange
    // Use RSA with OAEP padding, 2048 bit keys
    private static final String ALGORITHM = "RSA";
-   private static final String MODE_OF_OPERATION = "ECB";
+   private static final String MODE_OF_OPERATION = "NONE";
    private static final String PADDING = "OAEPWithSHA-256AndMGF1Padding";
    private static final int RSA_KEY_SIZE = 2048; // bits
    
@@ -181,7 +180,7 @@ public class EncryptionUtil {
          byte[] ciphertext = Base64.decode(message);
          
          // Extract the symmetric keys
-         byte[] keys = new byte[getAESKeySizeInBytes() * 2];
+         byte[] keys = new byte[getRSAKeySizeInBytes()];
          System.arraycopy(ciphertext, ciphertext.length - keys.length, keys, 0, keys.length);
          
          // Decrypt the keys with RSA
@@ -218,11 +217,11 @@ public class EncryptionUtil {
    }
    
    int getAESKeySizeInBytes() {
-      return AES_KEY_SIZE / 8;
+      return AES_KEY_SIZE / Byte.SIZE;
    }
    
    int getRSAKeySizeInBytes() {
-      return RSA_KEY_SIZE / 8;
+      return RSA_KEY_SIZE / Byte.SIZE;
    }
    
    /**
@@ -328,7 +327,7 @@ public class EncryptionUtil {
 //         encryptionKeys.setKeys(encryptionKey, integrityKey);
          encryptionKeys = new EncryptionKeys(encryptionKey, integrityKey);
          
-         return Base64.encode(message);
+         return message;
       }
       
       /**
@@ -351,15 +350,16 @@ public class EncryptionUtil {
          byte[] iv = new byte[IV_SIZE];
          System.arraycopy(ciphertext, 0, iv, 0, IV_SIZE);
          
-         // Extract the message
-         int messageLengthInBytes = ciphertext.length - IV_SIZE;
-         byte[] decodedMessage = new byte[messageLengthInBytes];
-         System.arraycopy(ciphertext, IV_SIZE, decodedMessage, 0, messageLengthInBytes);
-         
          // Extract the tag
+         // HMAC tag is the same size of AES key = 256 bits
          byte[] tag = new byte[getAESKeySizeInBytes()];
          System.arraycopy(ciphertext, ciphertext.length - tag.length, tag, 0, tag.length);
          
+         // Extract the message
+         int messageLengthInBytes = ciphertext.length - IV_SIZE - tag.length;
+         byte[] decodedMessage = new byte[messageLengthInBytes];
+         System.arraycopy(ciphertext, IV_SIZE, decodedMessage, 0, messageLengthInBytes);
+              
          // Check HMAC tags
          byte[] myTag = HmacSHA256(decodedMessage, integrityKey);
          
@@ -458,7 +458,7 @@ public class EncryptionUtil {
       private ClientKeyExchange() throws NoSuchAlgorithmException, NoSuchProviderException,
             NoSuchPaddingException, URISyntaxException, IOException, InvalidKeySpecException {
          String transformation = ALGORITHM + "/" + MODE_OF_OPERATION + "/" + PADDING;
-         cipher = Cipher.getInstance(transformation);
+         cipher = Cipher.getInstance(transformation, PROVIDER);
          
          // Create a new File object for the keys
          keyFile = new File(KEYS_FILE_NAME);
@@ -501,10 +501,8 @@ public class EncryptionUtil {
       public byte[] encrypt(byte[] plaintext, PublicKey key) throws InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {      
          cipher.init(Cipher.ENCRYPT_MODE, key);
-         
-         byte[] ciphertext = cipher.doFinal(plaintext);
-         
-         return Base64.encode(ciphertext);
+
+         return cipher.doFinal(plaintext);
       }
       
       /**
@@ -515,14 +513,14 @@ public class EncryptionUtil {
        * @throws InvalidKeyException
        * @throws IllegalBlockSizeException
        * @throws BadPaddingException
+       * @throws NoSuchPaddingException 
+       * @throws NoSuchAlgorithmException 
        */
       public byte[] decrypt(byte[] ciphertext) throws InvalidKeyException,
             IllegalBlockSizeException, BadPaddingException {
          cipher.init(Cipher.DECRYPT_MODE, privateKey);
          
-         byte[] text = Base64.decode(ciphertext);
-         
-         return cipher.doFinal(text);
+         return cipher.doFinal(ciphertext);
       }
       
       /**
@@ -533,7 +531,7 @@ public class EncryptionUtil {
        * @throws NoSuchProviderException
        */
       private KeyPair generateKeyPair() throws NoSuchAlgorithmException, NoSuchProviderException {
-         KeyPairGenerator generator = KeyPairGenerator.getInstance(ALGORITHM);
+         KeyPairGenerator generator = KeyPairGenerator.getInstance(ALGORITHM, PROVIDER);
          generator.initialize(RSA_KEY_SIZE);
          
          return generator.generateKeyPair();
@@ -638,19 +636,24 @@ public class EncryptionUtil {
          InvalidKeySpecException, NoSuchAlgorithmException {
          FileInputStream privateKeyIS = null;
          FileInputStream publicKeyIS = null;
+         InputStream privateKeyBIS = null; // Buffered Input Stream
+         InputStream publicKeyBIS = null;
          
          try {            
             privateKeyIS = new FileInputStream(privateKeyFile);
             publicKeyIS = new FileInputStream(publicKeyFile);
             
+            privateKeyBIS = new BufferedInputStream(privateKeyIS);
+            publicKeyBIS = new BufferedInputStream(publicKeyIS);
+            
             byte[] encodedPublicKey = new byte[RSA_KEY_SIZE];
-            publicKeyIS.read(encodedPublicKey); 
+            publicKeyBIS.read(encodedPublicKey); 
             
             X509EncodedKeySpec x509 = new X509EncodedKeySpec(encodedPublicKey);
             publicKey = KeyFactory.getInstance(ALGORITHM).generatePublic(x509);
             
             byte[] encodedPrivateKey = new byte[RSA_KEY_SIZE];
-            privateKeyIS.read(encodedPrivateKey);
+            privateKeyBIS.read(encodedPrivateKey);
             
             PKCS8EncodedKeySpec pkcs8 = new PKCS8EncodedKeySpec(encodedPrivateKey);
             privateKey = KeyFactory.getInstance(ALGORITHM).generatePrivate(pkcs8);
@@ -684,7 +687,7 @@ public class EncryptionUtil {
    
    public class MessageFailedToDecryptException extends Exception {
       
-      static final String message = "Message failed to send";
+      static final String message = "Message failed to decrypt";
       
       public MessageFailedToDecryptException() {
          super(message);
