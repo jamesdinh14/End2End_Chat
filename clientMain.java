@@ -88,7 +88,18 @@ public class clientMain {
       JOptionPane.showMessageDialog(null, response);
       break;
       
-      
+      case "get":
+         String url = "https://teaminsecurity.club/login_api/message.php";
+//         System.out.println(example.messageGET(url, JWT));
+         String messages = example.messageGET(url, JWT);
+         ServerMessageParser smp = new ServerMessageParser();
+         smp.parse(messages);
+         for (Message m : smp.getConversation()) {
+            m.decryptContents(eu);
+            System.out.println(m.toString());
+         }
+         
+         break;
       
       default:
     	  JOptionPane.showMessageDialog(null, "wrong input");

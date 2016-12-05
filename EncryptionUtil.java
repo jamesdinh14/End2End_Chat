@@ -181,15 +181,15 @@ public class EncryptionUtil {
          byte[] ciphertext = Base64.decode(message);
          
          // Extract the symmetric keys
-         byte[] keys = new byte[AES_KEY_SIZE * 2];
+         byte[] keys = new byte[getAESKeySizeInBytes() * 2];
          System.arraycopy(ciphertext, ciphertext.length - keys.length, keys, 0, keys.length);
          
          // Decrypt the keys with RSA
          byte[] decryptedKeys = keyExchangeInstance.decrypt(keys);
          
          // Separate the keys
-         byte[] encodedEncryptionKey = new byte[AES_KEY_SIZE];
-         byte[] encodedIntegrityKey = new byte[AES_KEY_SIZE];
+         byte[] encodedEncryptionKey = new byte[getAESKeySizeInBytes()];
+         byte[] encodedIntegrityKey = new byte[getAESKeySizeInBytes()];
          System.arraycopy(decryptedKeys, 0, encodedEncryptionKey, 0, encodedEncryptionKey.length);
          System.arraycopy(decryptedKeys, encodedIntegrityKey.length, encodedIntegrityKey, 0, encodedIntegrityKey.length);
          SecretKey encryptionKey = new SecretKeySpec(encodedEncryptionKey, ENCRYPTION_ALGORITHM);
@@ -208,13 +208,21 @@ public class EncryptionUtil {
       
       throw new MessageFailedToDecryptException();
    }
-   
+
    public void addPublicKey(String username, PublicKey pk) {
       keyExchangeInstance.putPublicKey(username, pk);
    }
    
    public PublicKey getMyPublicKey() {
       return keyExchangeInstance.getMyPublicKey();
+   }
+   
+   int getAESKeySizeInBytes() {
+      return AES_KEY_SIZE / 8;
+   }
+   
+   int getRSAKeySizeInBytes() {
+      return RSA_KEY_SIZE / 8;
    }
    
    /**
@@ -300,9 +308,9 @@ public class EncryptionUtil {
          
          // Concatenate the two keys
          // k(e) + k(i)
-         byte[] keys = new byte[getKeySizeInBytes() + getKeySizeInBytes()];
-         System.arraycopy(encryptionKey.getEncoded(), 0, keys, 0, getKeySizeInBytes());
-         System.arraycopy(integrityKey.getEncoded(), 0, keys, getKeySizeInBytes(), getKeySizeInBytes());
+         byte[] keys = new byte[getAESKeySizeInBytes() + getAESKeySizeInBytes()];
+         System.arraycopy(encryptionKey.getEncoded(), 0, keys, 0, getAESKeySizeInBytes());
+         System.arraycopy(integrityKey.getEncoded(), 0, keys, getAESKeySizeInBytes(), getAESKeySizeInBytes());
          
          // Create the bulk of the message
          // IV + ciphertext + tag
@@ -349,7 +357,7 @@ public class EncryptionUtil {
          System.arraycopy(ciphertext, IV_SIZE, decodedMessage, 0, messageLengthInBytes);
          
          // Extract the tag
-         byte[] tag = new byte[getKeySizeInBytes()];
+         byte[] tag = new byte[getAESKeySizeInBytes()];
          System.arraycopy(ciphertext, ciphertext.length - tag.length, tag, 0, tag.length);
          
          // Check HMAC tags
@@ -382,10 +390,6 @@ public class EncryptionUtil {
          keyGenerator.init(AES_KEY_SIZE);
          
          return keyGenerator.generateKey();
-      }
-      
-      private int getKeySizeInBytes() {
-         return AES_KEY_SIZE / 8;
       }
       
       /**
@@ -552,10 +556,7 @@ public class EncryptionUtil {
       final Key getMyPrivateKey() {
          return privateKey;
       }
-      
-      final int getRSAKeySizeInBytes() {
-         return RSA_KEY_SIZE / 8;
-      }
+ 
       /**
        * QR code generation, change path "C:/Users/Kenny/workspace/kkkk/RsaQR.png" to your directory to save .png.
        * 

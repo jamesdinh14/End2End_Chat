@@ -64,9 +64,10 @@ if ($_SERVER["REQUEST_METHOD"] === "GET") {
 }
 
 function printMessages($messages) {
+	$message_delim = "&&*cecs478enddne^#%";
 	foreach ($messages as $message) {
 		foreach ($message as $key => $value) {
-			echo "{$key}: {$value}\n";
+			echo "{$key}=>{$value}" . $message_delim;
 		}
 		echo "\n";
 	}
