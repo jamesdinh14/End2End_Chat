@@ -6,6 +6,7 @@
 package JavaClientforPHP;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.util.Scanner;
 
@@ -24,6 +25,7 @@ public class clientMain {
       javaClientForPHPService example = new javaClientForPHPService();
 //      ClientEncryption test = ClientEncryption.getEncryptionInstance();
       EncryptionUtil eu = EncryptionUtil.getEncryptionUtilInstance();
+      eu.QRGeneration();
       String encryptedMessage= null;
       String hmacTag = null;
       Scanner sc = new Scanner(System.in);
@@ -77,9 +79,11 @@ public class clientMain {
 //    	}
       
       String eMessage = null;
+   
       try {
+    	 String rePK = eu.readFile("repk.txt", StandardCharsets.UTF_8);
          eu.addPublicKey(myUsername, eu.getMyPublicKey());
-         eMessage = eu.encryptMessage(message, receiver);
+         eMessage = eu.encryptMessage(message, receiver, rePK);
       } catch (Exception e) {
          e.getMessage();
          e.printStackTrace();

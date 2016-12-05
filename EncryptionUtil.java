@@ -10,6 +10,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.Key;
@@ -132,7 +135,7 @@ public class EncryptionUtil {
     * @return the message encrypted, along with decryption tools
     * @throws MessageFailedToSendException 
     */
-   public String encryptMessage(String message, String receiver) throws MessageFailedToSendException {
+   public String encryptMessage(String message, String receiver, String receiverPK) throws MessageFailedToSendException {
       try {
          // Encrypt the given message with AES
          // This chunk of data contains the IV, the message, and then tag
@@ -150,7 +153,11 @@ public class EncryptionUtil {
          System.arraycopy(integrityKey, 0, keys, encryptionKey.length, integrityKey.length);
          
          // Get the receiver's public key and use RSA to encrypt the keys
-         PublicKey receiverPublicKey = keyExchangeInstance.getPublicKey(receiver);
+         byte[] decodeKey = Base64.decode(receiverPK);
+         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodeKey);
+         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+         PublicKey receiverPublicKey = keyFactory.generatePublic(keySpec);
+         //PublicKey receiverPublicKey = keyExchangeInstance.getPublicKey(receiver);
          byte[] encryptedKeys = keyExchangeInstance.encrypt(keys, receiverPublicKey);
          
          // Append result of AES encryption with RSA-encrypted keys
@@ -167,6 +174,7 @@ public class EncryptionUtil {
       // If the try fails, then the message failed to send
       throw new MessageFailedToSendException();
    }
+   
    
    /**
     * Performs AES and RSA decryption to recover the encrypted message
@@ -438,6 +446,57 @@ public class EncryptionUtil {
         return integrityKey;
       }
    }
+   public void QRGeneration() {
+  	   String publicKey = keyExchangeInstance.myPublicKeyString();
+       String myCodeText = publicKey;
+       String filePath = "RsaQR.png";
+       int size = 250;
+       String fileType = "png";
+       File myFile = new File(filePath);
+       System.out.println(myFile.getAbsolutePath());
+       try {
+          
+          Map<EncodeHintType, Object> hintMap = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
+          hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
+          
+          
+          hintMap.put(EncodeHintType.MARGIN, 1); 
+          hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
+
+          QRCodeWriter qrCodeWriter = new QRCodeWriter();
+          BitMatrix byteMatrix = qrCodeWriter.encode(myCodeText, BarcodeFormat.QR_CODE, size,
+                size, hintMap);
+          int imgWidth = byteMatrix.getWidth();
+          BufferedImage image = new BufferedImage(imgWidth, imgWidth,
+                BufferedImage.TYPE_INT_RGB);
+          image.createGraphics();
+
+          Graphics2D graphics = (Graphics2D) image.getGraphics();
+          graphics.setColor(Color.WHITE);
+          graphics.fillRect(0, 0, imgWidth, imgWidth);
+          graphics.setColor(Color.BLACK);
+
+          for (int i = 0; i < imgWidth; i++) {
+             for (int j = 0; j < imgWidth; j++) {
+                if (byteMatrix.get(i, j)) {
+                   graphics.fillRect(i, j, 1, 1);
+                }
+             }
+          }
+          ImageIO.write(image, fileType, myFile);
+       } catch (WriterException e) {
+          e.printStackTrace();
+       } catch (IOException e) {
+          e.printStackTrace();
+       }
+       System.out.println("\n\nYou have successfully created QR Code.");
+    }
+   public String readFile(String path, Charset encoding) 
+		   throws IOException 
+		 {
+		   byte[] encoded = Files.readAllBytes(Paths.get(path));
+		   return new String(encoded, encoding);
+		 }
    
    public class ClientKeyExchange {     
       
@@ -551,6 +610,12 @@ public class EncryptionUtil {
          return publicKey;
       }
       
+      public String myPublicKeyString() {
+    	  PublicKey sKey= getMyPublicKey();
+    	  String keyString = Base64.toBase64String(sKey.getEncoded());
+    	  return keyString;
+      }
+      
       // Consider removing later
       final Key getMyPrivateKey() {
          return privateKey;
@@ -560,50 +625,6 @@ public class EncryptionUtil {
        * QR code generation, change path "C:/Users/Kenny/workspace/kkkk/RsaQR.png" to your directory to save .png.
        * 
        */
-      public void QRGeneration(String publicKey) {
-         String myCodeText = publicKey;
-         String filePath = "RsaQR.png";
-         int size = 250;
-         String fileType = "png";
-         File myFile = new File(filePath);
-         System.out.println(myFile.getAbsolutePath());
-         try {
-            
-            Map<EncodeHintType, Object> hintMap = new EnumMap<EncodeHintType, Object>(EncodeHintType.class);
-            hintMap.put(EncodeHintType.CHARACTER_SET, "UTF-8");
-            
-            
-            hintMap.put(EncodeHintType.MARGIN, 1); 
-            hintMap.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.L);
-
-            QRCodeWriter qrCodeWriter = new QRCodeWriter();
-            BitMatrix byteMatrix = qrCodeWriter.encode(myCodeText, BarcodeFormat.QR_CODE, size,
-                  size, hintMap);
-            int imgWidth = byteMatrix.getWidth();
-            BufferedImage image = new BufferedImage(imgWidth, imgWidth,
-                  BufferedImage.TYPE_INT_RGB);
-            image.createGraphics();
-
-            Graphics2D graphics = (Graphics2D) image.getGraphics();
-            graphics.setColor(Color.WHITE);
-            graphics.fillRect(0, 0, imgWidth, imgWidth);
-            graphics.setColor(Color.BLACK);
-
-            for (int i = 0; i < imgWidth; i++) {
-               for (int j = 0; j < imgWidth; j++) {
-                  if (byteMatrix.get(i, j)) {
-                     graphics.fillRect(i, j, 1, 1);
-                  }
-               }
-            }
-            ImageIO.write(image, fileType, myFile);
-         } catch (WriterException e) {
-            e.printStackTrace();
-         } catch (IOException e) {
-            e.printStackTrace();
-         }
-         System.out.println("\n\nYou have successfully created QR Code.");
-      }
       
       private void writeKeysToFiles() throws IOException {
          FileOutputStream privateKeyOS = null;
